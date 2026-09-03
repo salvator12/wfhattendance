@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # -------------------------------------------------------------
+  # DATABASE SERVICE (MySQL 8)
+  # -------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: wfh_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wfh_attendance_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - wfh_network
+
+  # -------------------------------------------------------------
+  # AUTH SERVICE
+  # -------------------------------------------------------------
+  auth-service:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    container_name: wfh_auth_service
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: appuser
+      DB_PASS: apppassword
+      DB_NAME: wfh_attendance_db
+      JWT_SECRET: super_secret_jwt_key_wfh_app
+    depends_on:
+      - mysql
+    networks:
+      - wfh_network
+
+  # -------------------------------------------------------------
+  # EMPLOYEE SERVICE
+  # -------------------------------------------------------------
+  employee-service:
+    build:
+      context: ./backend/employee-service
+      dockerfile: Dockerfile
+    container_name: wfh_employee_service
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: appuser
+      DB_PASS: apppassword
+      DB_NAME: wfh_attendance_db
+    depends_on:
+      - mysql
+    networks:
+      - wfh_network
+
+  # -------------------------------------------------------------
+  # ATTENDANCE SERVICE
+  # -------------------------------------------------------------
+  attendance-service:
+    build:
+      context: ./backend/attendance-service
+      dockerfile: Dockerfile
+    container_name: wfh_attendance_service
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: appuser
+      DB_PASS: apppassword
+      DB_NAME: wfh_attendance_db
+    volumes:
+      - ./uploads:/app/uploads
+    depends_on:
+      - mysql
+    networks:
+      - wfh_network
+
+  # -------------------------------------------------------------
+  # API GATEWAY
+  # -------------------------------------------------------------
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    container_name: wfh_api_gateway
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      AUTH_SERVICE_URL: http://auth-service:3001
+      EMPLOYEE_SERVICE_URL: http://employee-service:3002
+      ATTENDANCE_SERVICE_URL: http://attendance-service:3003
+    depends_on:
+      - auth-service
+      - employee-service
+      - attendance-service
+    networks:
+      - wfh_network
+
+networks:
+  wfh_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
