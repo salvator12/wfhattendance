@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from '../controller/app.controller.js';
-import { AppService } from '../app.service.js';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Employee } from '../entities/employee.entity.js';
-import { AuthModule } from './auth.module.js';
+import { Employee } from './entities/employee.entity.js';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthController } from './controller/auth.controller.js';
+import { AuthService } from './service/auth.service.js';
 
 @Module({
   imports: [
@@ -19,9 +19,13 @@ import { AuthModule } from './auth.module.js';
       entities: [Employee],
       synchronize: true
     }),
-    AuthModule
+    TypeOrmModule.forFeature([Employee]),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'super_secret_jwt_key_wfh_app',
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AuthController],
+  providers: [AuthService],
 })
 export class AppModule {}

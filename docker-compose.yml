@@ -1,9 +1,8 @@
 version: '3.8'
 
 services:
-  # -------------------------------------------------------------
+
   # DATABASE SERVICE (MySQL 8)
-  # -------------------------------------------------------------
   mysql:
     image: mysql:8.0
     container_name: wfh_mysql
@@ -20,9 +19,7 @@ services:
     networks:
       - wfh_network
 
-  # -------------------------------------------------------------
   # AUTH SERVICE
-  # -------------------------------------------------------------
   auth-service:
     build:
       context: ./backend/auth-service
@@ -43,9 +40,7 @@ services:
     networks:
       - wfh_network
 
-  # -------------------------------------------------------------
   # EMPLOYEE SERVICE
-  # -------------------------------------------------------------
   employee-service:
     build:
       context: ./backend/employee-service
@@ -65,9 +60,7 @@ services:
     networks:
       - wfh_network
 
-  # -------------------------------------------------------------
   # ATTENDANCE SERVICE
-  # -------------------------------------------------------------
   attendance-service:
     build:
       context: ./backend/attendance-service
@@ -88,10 +81,8 @@ services:
       - mysql
     networks:
       - wfh_network
-
-  # -------------------------------------------------------------
+      
   # API GATEWAY
-  # -------------------------------------------------------------
   api-gateway:
     build:
       context: ./backend/api-gateway
