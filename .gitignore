@@ -7,6 +7,9 @@ dist/
 .env
 *.env
 
+# Environment variables yang dikecualikan agar tetap di push Github untuk ditesting
+!.env.example
+
 # Uploaded assets
 uploads/*
 !uploads/.gitkeep
