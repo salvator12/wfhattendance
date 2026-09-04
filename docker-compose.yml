@@ -9,10 +9,10 @@ services:
     container_name: wfh_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: wfh_attendance_db
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppassword
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
     ports:
       - "3306:3306"
     volumes:
@@ -34,10 +34,10 @@ services:
       PORT: 3001
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_USER: appuser
-      DB_PASS: apppassword
-      DB_NAME: wfh_attendance_db
-      JWT_SECRET: super_secret_jwt_key_wfh_app
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       - mysql
     networks:
@@ -57,9 +57,9 @@ services:
       PORT: 3002
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_USER: appuser
-      DB_PASS: apppassword
-      DB_NAME: wfh_attendance_db
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
     depends_on:
       - mysql
     networks:
@@ -79,9 +79,9 @@ services:
       PORT: 3003
       DB_HOST: mysql
       DB_PORT: 3306
-      DB_USER: appuser
-      DB_PASS: apppassword
-      DB_NAME: wfh_attendance_db
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
     volumes:
       - ./uploads:/app/uploads
     depends_on:
