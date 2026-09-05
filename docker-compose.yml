@@ -1,110 +1,90 @@
 version: '3.8'
 
 services:
-
-  # DATABASE SERVICE (MySQL 8)
+  
+  # Database Service (MySQL 8)
   mysql:
     image: mysql:8.0
     container_name: wfh_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-wfh_attendance_db}
+      MYSQL_USER: ${DB_USER:-appuser}
+      MYSQL_PASSWORD: ${DB_PASS:-apppassword}
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - wfh_network
-
-  # AUTH SERVICE
+  
+  # Auth Service
   auth-service:
-    build:
-      context: ./backend/auth-service
-      dockerfile: Dockerfile
-    container_name: wfh_auth_service
+    build: ./backend/auth-service
+    container_name: auth_service
+    restart: always
     ports:
-      - "3001:3001"
+      - "${AUTH_PORT:-3001}:3001"
     environment:
-      PORT: 3001
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
-      JWT_SECRET: ${JWT_SECRET}
+      - PORT=3001
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USER=${DB_USER:-appuser}
+      - DB_PASS=${DB_PASS:-apppassword}
+      - DB_NAME=${DB_NAME:-wfh_attendance_db}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_wfh_app_testing_123}
     depends_on:
       - mysql
-    networks:
-      - wfh_network
-
-  # EMPLOYEE SERVICE
+  
+  # Employee Service
   employee-service:
-    build:
-      context: ./backend/employee-service
-      dockerfile: Dockerfile
-    container_name: wfh_employee_service
+    build: ./backend/employee-service
+    container_name: employee_service
+    restart: always
     ports:
-      - "3002:3002"
+      - "${EMPLOYEE_PORT:-3002}:3002"
     environment:
-      PORT: 3002
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
+      - PORT=3002
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USER=${DB_USER:-appuser}
+      - DB_PASS=${DB_PASS:-apppassword}
+      - DB_NAME=${DB_NAME:-wfh_attendance_db}
     depends_on:
       - mysql
-    networks:
-      - wfh_network
 
-  # ATTENDANCE SERVICE
+  # Attendance Service
   attendance-service:
-    build:
-      context: ./backend/attendance-service
-      dockerfile: Dockerfile
-    container_name: wfh_attendance_service
+    build: ./backend/attendance-service
+    container_name: attendance_service
+    restart: always
     ports:
-      - "3003:3003"
+      - "${ATTENDANCE_PORT:-3003}:3003"
     environment:
-      PORT: 3003
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
-    volumes:
-      - ./uploads:/app/uploads
+      - PORT=3003
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USER=${DB_USER:-appuser}
+      - DB_PASS=${DB_PASS:-apppassword}
+      - DB_NAME=${DB_NAME:-wfh_attendance_db}
     depends_on:
       - mysql
-    networks:
-      - wfh_network
-      
-  # API GATEWAY
+
+  # API Gateway
   api-gateway:
-    build:
-      context: ./backend/api-gateway
-      dockerfile: Dockerfile
-    container_name: wfh_api_gateway
+    build: ./backend/api-gateway
+    container_name: api_gateway
+    restart: always
     ports:
-      - "3000:3000"
+      - "${GATEWAY_PORT:-3000}:3000"
     environment:
-      PORT: 3000
-      AUTH_SERVICE_URL: http://auth-service:3001
-      EMPLOYEE_SERVICE_URL: http://employee-service:3002
-      ATTENDANCE_SERVICE_URL: http://attendance-service:3003
+      - PORT=3000
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL:-http://auth-service:3001}
+      - EMPLOYEE_SERVICE_URL=${EMPLOYEE_SERVICE_URL:-http://employee-service:3002}
+      - ATTENDANCE_SERVICE_URL=${ATTENDANCE_SERVICE_URL:-http://attendance-service:3003}
     depends_on:
       - auth-service
       - employee-service
       - attendance-service
-    networks:
-      - wfh_network
-
-networks:
-  wfh_network:
-    driver: bridge
 
 volumes:
   mysql_data:
