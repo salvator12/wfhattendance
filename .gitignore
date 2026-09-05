@@ -12,7 +12,7 @@ dist/
 
 # Uploaded assets
 uploads/*
-!uploads/.gitkeep
+**/uploads/
 
 # IDE & OS files
 .vscode/
