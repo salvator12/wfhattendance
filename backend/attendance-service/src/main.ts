@@ -6,4 +6,4 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3003);
   console.log(`Attendance Service is running on port 3003`);
 }
-await bootstrap();
+bootstrap();
