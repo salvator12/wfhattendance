@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AttendanceController } from '../src/controller/attendance.controller.js';
-import { AttendanceService } from '../src/service/attendance.service.js';
+import { AttendanceController } from './controller/attendance.controller.js';
+import { AttendanceService } from './service/attendance.service.js';
 import { Attendance } from './entities/attendance.entity.js';
 
 @Module({
