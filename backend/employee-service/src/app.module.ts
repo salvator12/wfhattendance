@@ -17,7 +17,8 @@ import { EmployeeService } from './service/employee.service.js';
       database: process.env.DB_NAME || 'wfh_attendance_db',
       entities: [Employee],
       synchronize: true,
-    })
+    }),
+    TypeOrmModule.forFeature([Employee]),
   ],
   controllers: [EmployeeController],
   providers: [EmployeeService],
