@@ -87,6 +87,16 @@ services:
       - auth-service
       - employee-service
       - attendance-service
+  
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
 
 volumes:
   mysql_data:
