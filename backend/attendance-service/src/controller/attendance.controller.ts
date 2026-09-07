@@ -23,7 +23,7 @@ export class AttendanceController {
     ) {}
 
     @Post('clock-in') // menyatakan fungsi ini menerima HTTP Request dengan method POST
-    @UseInterceptors(FileInterceptor('photo', multerOptions)) // 
+    @UseInterceptors(FileInterceptor('photo', multerOptions))
     async clockIn(@Body() dto: ClockInDto, @UploadedFile() file: Express.Multer.File) {
         
         if (!dto.employeeId) {
@@ -37,12 +37,20 @@ export class AttendanceController {
     }
 
     @Post('clock-out')
-    async clockOut(@Body() dto: ClockOutDto) {
-        dto.employeeId
+    @UseInterceptors(FileInterceptor('photo', multerOptions)) 
+    async clockOut(
+        @Body() dto: ClockOutDto, 
+        @UploadedFile() file: Express.Multer.File
+    ) {
         if (!dto.employeeId) {
             throw new BadRequestException('employeeId is required');
         }
-        return this.attendanceService.clockOut(dto.employeeId);
+        // Validasi wajib upload foto saat clock-out
+        if (!file) {
+           throw new BadRequestException('Photo attachment is required for clock-out');
+        }
+
+        return this.attendanceService.clockOut(dto.employeeId, file.path);
     }
 
     @Get('history/:employeeId')
@@ -50,7 +58,7 @@ export class AttendanceController {
         return this.attendanceService.getEmployeeHistory(employeeId)
     }
 
-    @Get('all')
+    @Get('/hrd/all')
     async findAll() {
         return this.attendanceService.findAll();
     }

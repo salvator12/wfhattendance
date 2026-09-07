@@ -23,8 +23,11 @@ export class Attendance {
     @Column({ name: 'clock_out', type: 'time', nullable: true })
     clockOut: string;
 
-    @Column({ name: 'photo_url', length: 255 })
-    photoUrl: string;
+    @Column({ name: 'photo_in_url', length: 255, nullable: true })
+    photoInUrl: string;
+
+    @Column({ name: 'photo_out_url', length: 255, nullable: true })
+    photoOutUrl: string;
 
     @Column({ type: 'enum', enum: AttendanceStatus, default: AttendanceStatus.ABSENT })
     status: AttendanceStatus;

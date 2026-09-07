@@ -12,11 +12,24 @@ export class AttendanceService {
     ) {}
 
     private getTodayDateString(): string {
-        return new Date().toISOString().split('T')[0]
+        const formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Jakarta',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+        });
+        return formatter.format(new Date())
     }
 
     private getCurrentTimeString(): string {
-        return new Date().toTimeString().split(' ')[0] //HH:MM:SS
+        const formatter = new Intl.DateTimeFormat('it-IT', {
+            timeZone: 'Asia/Jakarta',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        });
+        return formatter.format(new Date())
     }
 
     // Sistem Clock In (dengan upload foto)
@@ -43,7 +56,7 @@ export class AttendanceService {
             employeeId,
             date: today,
             clockIn: currentTime,
-            photoUrl: photoPath,
+            photoInUrl: photoPath,
             status
         })
 
@@ -51,7 +64,7 @@ export class AttendanceService {
     }
 
     // Sistem Clock Out
-    async clockOut(employeeId: string) {
+    async clockOut(employeeId: string, photoPath: string) {
         const today = this.getTodayDateString()
 
         const attendance = await this.attendanceRepository.findOne({
@@ -67,6 +80,9 @@ export class AttendanceService {
         }
 
         attendance.clockOut = this.getCurrentTimeString()
+        
+        attendance.photoOutUrl = photoPath; 
+
         return this.attendanceRepository.save(attendance)
     }
 

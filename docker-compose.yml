@@ -59,6 +59,8 @@ services:
     restart: always
     ports:
       - "${ATTENDANCE_PORT:-3003}:3003"
+    volumes:
+      - ./backend/attendance-service/uploads:/usr/src/app/uploads
     environment:
       - PORT=3003
       - DB_HOST=${DB_HOST:-mysql}
